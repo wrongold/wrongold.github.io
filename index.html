@@ -42,18 +42,22 @@
             padding: 15px;
             border: 1px solid #ccc;
             margin-top: 15px;
-            justify-content: space-between;
+            justify-content: stretch;
             align-items: center;
         }
 
         .entry > pre {
             flex: 8;
+            overflow-x: scroll;
+            margin-right: 20px;
+            padding: 5px;
         }
 
         .entry a {
             text-decoration: none;
             display: inline-block;
             flex: 2;
+
         }
 
     </style>
@@ -76,16 +80,20 @@
             </fieldset>
         </main>
 
+        <select id="date" style="margin-top: 5px;">
+            <option value="y">Last year</option>
+        </select>
+
         <div id="result"></div>
 
     </div>
 
-   
     <script>
 
         const termsEl = document.getElementById('terms');
         const domainsEl = document.getElementById('domains');
         const resultEl = document.getElementById('result');
+        const dateEl = document.getElementById('date');
 
         const build = () => {
 
@@ -93,9 +101,9 @@
 
             let terms = termsEl.value.split(/\r?\n/).filter(str => /\w+/.test(str));
             let domains = domainsEl.value.split(/\r?\n/).filter(str => /\w+/.test(str));
+           
+            let date = new Date(new Date().setFullYear(new Date().getFullYear() -1)).toISOString().substr(0, 10);
 
-            console.log(terms);
-            console.log(domains);
             if(terms.length == 0 || domains.length == 0) {
                 return;
             }
@@ -107,12 +115,13 @@
                 entry.className = 'entry';
 
                 let pre = document.createElement('pre');
-                pre.innerHTML = `"${term}" AND (${domains_string})`;
+                let search_string = `"${term}" AND (${domains_string}) after:${date}`;
+                pre.innerHTML = search_string;
 
                 let a = document.createElement('a');
                 a.innerHTML = "Search on Google ↗️";
                 a.target = "_blank";
-                a.href = `https://www.google.com/search?q="${term}" AND (${domains_string})`
+                a.href = `https://www.google.com/search?q=${search_string}`
 
                 entry.appendChild(pre);
                 entry.appendChild(a);
@@ -120,7 +129,6 @@
                 resultEl.appendChild(entry);
                 
             });
-
         }
 
         termsEl.addEventListener('change', () => {
@@ -130,8 +138,6 @@
         domainsEl.addEventListener('change', () => {
             build();
         });
-
-
 
     </script>
     
