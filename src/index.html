@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Builder</title>
+    <style>
+ 
+        textarea {
+            flex: 1;
+            height: 200px;
+        }
+
+        fieldset {
+            flex: 1;
+            display: flex;
+        }
+
+        .textareas {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .result {
+            padding: 15px;
+
+        }
+
+        .entry {
+            display: flex;
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin-top: 15px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .entry > pre {
+            flex: 8;
+        }
+
+        .entry a {
+            text-decoration: none;
+            display: inline-block;
+            flex: 2;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Build your search</h1>
+
+        <main class="textareas">
+            <fieldset>
+                <legend>Search terms (one per line)</legend>
+                <textarea id="terms"></textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend>Domains (one per line)</legend>
+                <textarea id="domains"></textarea>
+            </fieldset>
+        </main>
+
+        <div id="result"></div>
+
+    </div>
+
+   
+    <script>
+
+        const termsEl = document.getElementById('terms');
+        const domainsEl = document.getElementById('domains');
+        const resultEl = document.getElementById('result');
+
+        const build = () => {
+
+            resultEl.innerHTML = '';
+
+            let terms = termsEl.value.split(/\r?\n/).filter(str => /\w+/.test(str));
+            let domains = domainsEl.value.split(/\r?\n/).filter(str => /\w+/.test(str));
+
+            console.log(terms);
+            console.log(domains);
+            if(terms.length == 0 || domains.length == 0) {
+                return;
+            }
+
+            let domains_string = domains.map((d) => {return 'site:' + d}).join(' OR ')
+
+            terms.forEach(term => {
+                let entry = document.createElement('div');
+                entry.className = 'entry';
+
+                let pre = document.createElement('pre');
+                pre.innerHTML = `"${term}" AND (${domains_string})`;
+
+                let a = document.createElement('a');
+                a.innerHTML = "Search on Google ↗️";
+                a.target = "_blank";
+                a.href = `https://www.google.com/search?q="${term}" AND (${domains_string})`
+
+                entry.appendChild(pre);
+                entry.appendChild(a);
+
+                resultEl.appendChild(entry);
+                
+            });
+
+        }
+
+        termsEl.addEventListener('change', () => {
+            build();
+        });
+
+        domainsEl.addEventListener('change', () => {
+            build();
+        });
+
+
+
+    </script>
+    
+</body>
+</html>
