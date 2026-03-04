@@ -82,6 +82,9 @@
 
         <select id="date" style="margin-top: 5px;">
             <option value="y">Last year</option>
+            <option value="m">Last 30 days</option>
+            <option value="w">Last 7 days</option>
+            <option value="d">Last day</option>
         </select>
 
         <div id="result"></div>
@@ -102,7 +105,13 @@
             let terms = termsEl.value.split(/\r?\n/).filter(str => /\w+/.test(str));
             let domains = domainsEl.value.split(/\r?\n/).filter(str => /\w+/.test(str));
            
-            let date = new Date(new Date().setFullYear(new Date().getFullYear() -1)).toISOString().substr(0, 10);
+            let dates = {
+                'y': new Date(new Date().setFullYear(new Date().getFullYear() -1)).toISOString().substr(0, 10),
+                'm': new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().substr(0, 10),
+                'w': new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().substr(0, 10),
+                'd': new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().substr(0, 10)
+            }
+            let date = dates[dateEl.value];
 
             if(terms.length == 0 || domains.length == 0) {
                 return;
@@ -131,12 +140,18 @@
             });
         }
 
-        termsEl.addEventListener('change', () => {
-            build();
-        });
+        // termsEl.addEventListener('change', () => {
+        //     build();
+        // });
 
-        domainsEl.addEventListener('change', () => {
-            build();
+        // domainsEl.addEventListener('change', () => {
+        //     build();
+        // });
+
+        [termsEl, domainsEl, dateEl].forEach(element => {
+            element.addEventListener('change', () => {
+                build();
+            })
         });
 
     </script>
